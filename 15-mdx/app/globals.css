@@ -1,0 +1,4 @@
+/* 默认样式会影响markdown生成的html的样式 */
+/* @tailwind base;   */
+@tailwind components;
+@tailwind utilities;
