@@ -1,9 +1,8 @@
-import SidebarNoteItem from '@/components/SidebarNoteItem'
 import { getAllNotes } from '@/lib/redis'
+import SidebarNoteListFilter from './SidebarNoteListFilter'
+import SidebarNoteItemHeader from './SidebarNoteItemHeader'
 
 export default async function NoteList() {
-  const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
-  await sleep(1000)
   const notes = await getAllNotes()
 
   const arr = Object.entries(notes)
@@ -13,14 +12,16 @@ export default async function NoteList() {
   }
 
   return (
-    <ul className="notes-list">
-      {arr.map(([noteId, note]) => {
-        return (
-          <li key={noteId}>
-            <SidebarNoteItem noteId={noteId} note={JSON.parse(note)} />
-          </li>
-        )
+    <SidebarNoteListFilter
+      notes={Object.entries(notes).map(([noteId, note]) => {
+        const noteData = JSON.parse(note)
+        return {
+          noteId,
+          note: noteData,
+          // 在这里将SidebarNoteItemHeader服务端组件作为props传给SidebarNoteListFilter客户端组件, SidebarNoteItemHeader的组件不会打包进客户端代码的bundle中
+          header: <SidebarNoteItemHeader title={noteData.title} updateTime={noteData.updateTime} />
+        }
       })}
-    </ul>
+    />
   )
 }
