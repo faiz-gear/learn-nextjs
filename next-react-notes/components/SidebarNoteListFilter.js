@@ -20,6 +20,7 @@ export default function SidebarNoteListFilter({ notes }) {
               expandedChildren={
                 <p className="sidebar-note-excerpt">{note.content.substring(0, 20) || <i>(No content)</i>}</p>
               }
+              key={noteId}
             >
               {header}
             </SidebarNoteItemContent>
