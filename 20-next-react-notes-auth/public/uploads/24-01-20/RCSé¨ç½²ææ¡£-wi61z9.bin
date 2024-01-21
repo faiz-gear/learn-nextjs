@@ -1,0 +1,126 @@
+# RCS部署方式
+
+本文介绍RCS调度监控系统web端如何快速部署到服务器上。主要包括nginx部署、容器化部署两种方式（Linux服务器上通过容器化部署最佳）。
+
+## 1.Nginx部署
+
+示例服务器：
+
+- 系统：Win10
+- 处理器：Intel(R) Core(TM) i7-8550U CPU @ 1.80GHz   1.99 GHz
+
+### 1.1.安装nginx（如已安装可略过）
+
+nginx官网下载：https://nginx.org/en/download.html
+
+直接去到nginx官网下载并安装nginx，这里我们一般选择Stable Version
+
+![image-20231226152639076](/Users/luyao/Library/Application Support/typora-user-images/image-20231226152639076.png)
+
+下载完成后解压，找到解压后的位置（解压到方便找到的盘符，如D盘），点击nginx.exe可执行文件，打开浏览器访问localhost,出现以下画面则表示安装成功。
+
+![image-20231226153116627](/Users/luyao/Library/Application Support/typora-user-images/image-20231226153116627.png)
+
+### 1.2.添加前端打包文件
+
+首先需要拿到RCS web前端打包的文件，这里暂时没有将当前稳定版本的打包文件放到私有云上，所以需要找前端组同事要。打包文件解压后是一个dist文件夹，里面包含main(主应用)、module(子应用)两个文件夹。
+
+![image-20231226153618680](/Users/luyao/Library/Application Support/typora-user-images/image-20231226153618680.png)
+
+拿到前端产物后，将main和module两个文件复制或者剪切到nginx的html目录下（50x.html和index.html是nginx原来自己有的）,这样就成功将前端的产物成功添加到nginx的静态文件目录下了。
+
+![image-20231226153737790](/Users/luyao/Library/Application Support/typora-user-images/image-20231226153737790.png)
+
+### 1.3.修改nginx.conf
+
+修改nginx安装目录下的conf/nginx.conf文件，粘贴如下配置
+
+```nginx
+worker_processes auto;
+events {
+    worker_connections  1024;
+    accept_mutex on;
+  }
+http {
+  include mime.types;
+  default_type application/octet-stream;
+  server {
+    listen 6990;
+    location / {
+      root html/main; # 指向应用的打包文件
+      try_files $uri $uri/ /index.html;
+      index index.html index.htm;
+    }
+    location /module/micro-dashboard {
+      alias html/module/micro-dashboard;
+      try_files $uri $uri/ /module/micro-dashboard/index.html; # 单独刷新
+      index index.html index.htm;
+    }
+    location /module/micro-data-management {
+      alias html/module/micro-data-management;
+      try_files $uri $uri/ /module/micro-data-management/index.html; # 单独刷新
+      index index.html index.htm;
+    }
+    location /api {
+      rewrite ^/api/(.*)$ /$1 break;
+      proxy_pass http://192.168.1.240:5203;
+      proxy_set_header Host $host;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Host $http_host;
+      proxy_set_header X-Forwarded-Port $server_port;
+      proxy_set_header X-Forwarded-Proto $scheme;
+    }
+  }
+}
+```
+
+保存后点击在当前目录打开cmd窗口，执行如下命令重启nginx
+
+```shell
+nginx -s reload
+```
+
+### 1.4.查看
+
+打开浏览器输入localhost:6990访问主应用
+
+![image-20231226161636720](/Users/luyao/Library/Application Support/typora-user-images/image-20231226161636720.png)
+
+输入localhost:6990/module/micro-dashboard/单独访问监控页面
+
+![image-20231226161802157](/Users/luyao/Library/Application Support/typora-user-images/image-20231226161802157.png)
+
+## 2.容器化部署
+
+### 2.1.前置条件
+
+1. 一台linux服务器，windows服务器也可以，但是安装配置起来较为麻烦。
+2. 需要服务器上安装并已成功启动docker。
+3. 由于暂时只构建并推送arm架构的镜像到劢微的阿里云私有镜像仓库，所以暂时只能支持arm架构的服务器部署，后续有需要再推送x86架构的镜像。
+
+### 2.2.拉取镜像
+
+由于暂时没有分配阿里云镜像仓库子账号，需要联系前端同事登录拉取镜像。
+
+比如当前拉取的镜像为：registry.cn-shenzhen.aliyuncs.com/multiway/rcs_web:1.0.0
+
+### 2.3.运行容器
+
+执行命令（映射的宿主机端口可以修改）
+
+```shell
+docker run -dp 6990:80 -p 6993:8080 --name rcs-web registry.cn-shenzhen.aliyuncs.com/multiway/rcs_web:1.0.0
+```
+
+执行命令后再运行docker ps命令，可以看到当前rcs-web的容器正在运行
+
+```
+docker ps
+```
+
+![image-20231226180809382](/Users/luyao/Library/Application Support/typora-user-images/image-20231226180809382.png)
+
+### 2.4.查看
+
+打开网页输入对应的ip和端口可以看到和“1.4.查看”一样的效果，则表示当前已经部署成功了。
