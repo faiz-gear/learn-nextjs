@@ -1,0 +1,132 @@
+### 1. 为什么需要文档审核流程？
+
+在劢微帮助中心的内容创作和发布环境中，确保发布的文档质量和一致性对于维护专业形象和提供准确信息至关重要。文档审核流程可以带来以下好处：
+
+- **质量保证**: 通过审核流程，可以确保发布的文档经过仔细审核，减少错误和不准确信息的风险。
+- **一致性**: 审核流程可以确保所有文档都符合公司品牌和风格指南，提供一致的外观和感觉。
+
+### 2. 什么是工作流？
+
+工作流是一种有序的、规范的过程，代表了文档审核流程的蓝图，用于管理和监督文档、内容或任务的创建、审核和发布。工作流通常包括不同的阶段和角色，以确保内容在经过适当审核和审批后才能发布。它可以用于提升协作效率、确保内容质量，并确保合规性。
+
+如图是一个Common工作流：
+
+![image-20230828095301339](/Users/luyao/Library/Application Support/typora-user-images/image-20230828095301339.png)
+
+### 3. 如何提交工作流并发布新文档？
+
+以下是提交工作流以发布新文档的一般步骤（以包含写作、复审、发布三个阶段的Common工作流为例）：
+
+1. 登录 WordPress 后台。
+
+2. 在文章编辑界面，添加你想要发布的新文档。
+
+3. 如下图，在编辑器页面的右侧，点击 "Submit to workflow"按钮，选择工作流、步骤、优先级，点击“提交工作流”（不要忘记在提交工作流之前需要选择文档分类），文章会进入Common工作流的写作阶段。
+
+   ![image-20230828102333029](/Users/luyao/Library/Application Support/typora-user-images/image-20230828102333029.png)
+
+4. 点击“提交工作流”后，文章状态会进入下一个阶段，如本例是“草稿”状态；同时，在左侧“Workflows”菜单，会显示数字徽标，代表当前用户有对应数量的文档审核流程需要处理。
+
+   ![image-20230828103700784](/Users/luyao/Library/Application Support/typora-user-images/image-20230828103700784.png)
+
+5. 进入“Workflows”界面，点击“流转”（特定情况下，需要用户先点击“Claim”按钮，认领任务）：
+
+   1. 选择Action，
+   2. Complete或Unable to complete， 代表“写作”阶段完成还是未完成，完成则可进入下一阶段，未完成会进入打回至上一阶段，这里直接选择"Complete"即可。
+   3. 选择Step，这里选择“复审”。
+   4. 选择优先级，一般情况下选择“Normal即可”。
+   5. 选择分配人员，即审核的人员，左侧是可用的人员列表，右侧是选择的复审文档的人员。
+   6. 点击流转，将进入工作流的“复审”阶段，流转到复审文档的负责人，这里选择的复审文档负责人是“editor-test”。
+
+   ![image-20230828104450395](/Users/luyao/Library/Application Support/typora-user-images/image-20230828104450395.png)
+
+   ![image-20230828104806084](/Users/luyao/Library/Application Support/typora-user-images/image-20230828104806084.png)
+
+6. 复审负责人流转文档，进入”发布“阶段。
+
+   如图，当前是“editor-test”用户的工作流收件箱，可以看到“文章标题”文档。
+
+   ![image-20230828111042974](/Users/luyao/Library/Application Support/typora-user-images/image-20230828111042974.png)
+
+   同理，点击流转，并选择Action、Step、优先级，这里分配人员选择”admin“。
+
+   ![image-20230828111228908](/Users/luyao/Library/Application Support/typora-user-images/image-20230828111228908.png)
+
+7. 发布负责人“admin”审核通过后，点击“流转”，由于当前是工作流最后一步，确认后会发布文档。审核如果发现有问题，同理可以选择"Unable to complete"，打回当前文档。
+
+   ![image-20230828111544359](/Users/luyao/Library/Application Support/typora-user-images/image-20230828111544359.png)
+
+8. 这样，一篇通过文档审核流程审核通过的文档便发布成功，并能够在帮助中心站点中查阅了。
+
+### 4. 如何创建一个新的工作流（管理员）？
+
+工作流需要帮助中心的管理员或授予相关权限的用户来创建。以创建上述的Common工作流为例，以下是一般步骤：
+
+1. 登录 WordPress 后台。
+
+2. 导航到 Workflows界面，点击"Add New Workflow"，输入工作流的标题和描述，点击”Save“添加新的工作流，进入工作流可视化编辑器。
+
+   ![image-20230828143204654](/Users/luyao/Library/Application Support/typora-user-images/image-20230828143204654.png)
+
+3. 在工作流可视化编辑器中拖拽设计工作流。
+
+   工作流可视化编辑器大致分为左侧的工作流设计画布区域，右侧的Processes、Workflow Info、Workflow Applicable To区域。我们通过将Processes的模块拖拽到画布中来设计Common工作流：
+
+   1. 写作阶段：拖拽assignment至画布中 ，输入字段信息:
+
+      - Step Name: 当前步骤名，这里输入”写作”。
+      - Assignee(s): 所有可能会负责当前工作流写作任务的人员，这里选择“Contributor”贡献者即可。
+      - Assign to all?: 是否将任务分发给所有的负责人。如果勾选，当前写作任务会发送给所有负责人的Workflows收件箱中，直到有一个负责人认领当前任务。不勾选，则在新文档订阅工作流时，需要选择特定的负责人。一般不勾选。
+      - Is first step?: 是不是第一步，写作Common工作流的第一步，这里勾选上。
+      - Post Status(on submit): 订阅工作流后初始的文章状态，这里选择"Draft"草稿。
+
+      ![image-20230828153326136](/Users/luyao/Library/Application Support/typora-user-images/image-20230828153326136.png)
+
+   2. 复审阶段：拖拽review至画布中，输入字段信息：
+
+      - Step Name: 这里输入“复审”。
+
+      - Assignee(s): 这里选择Editor。
+
+      - Assign to all?: 这里不需要勾选。
+
+      - Is first step?: 这里不需要勾选。
+
+      - Review Settings: 复审设置，有Everyone should approve\More than 50% should approve\Anyone should approve，这里选择第三个。
+
+      ![image-20230828154012206](/Users/luyao/Library/Application Support/typora-user-images/image-20230828154012206.png)
+
+   3. 发布阶段：拖拽publish至画布中，输入字段信息：
+
+      - Step Name: 这里输入“发布”。
+      - Assignee(s): 这里选择Administrator。
+      - Assign to all?: 这里不需要勾选。
+      - Is first step?: 这里不需要勾选。
+
+      ![image-20230828165721341](/Users/luyao/Library/Application Support/typora-user-images/image-20230828165721341.png)
+
+   4. 连接Process：将鼠标移入Process右侧淡红色矩形，长按并拖拽至其他Process上，之后会出现用来设置连接的弹窗，设置Post Status（接下来的文章状态）、Path(当前连接线是成功还是失败时触发)。
+
+      如，写作成功时，进入复审，同时文章变成“等待复审”状态。
+
+      ![image-20230828155822983](/Users/luyao/Library/Application Support/typora-user-images/image-20230828155822983.png)
+
+      保存链接后的结果如下图。
+
+      ![image-20230828160021308](/Users/luyao/Library/Application Support/typora-user-images/image-20230828160021308.png)
+
+      依此类推，按照实际工作方式连接所有Process后，一条完整的Common工作流就设计完成了。
+
+      ![image-20230828160522307](/Users/luyao/Library/Application Support/typora-user-images/image-20230828160522307.png)
+
+4. 设置工作流的Start date（什么时候开始可用，必选）、End date（什么时候开始不可用，可选）。
+
+   ![image-20230828161254417](/Users/luyao/Library/Application Support/typora-user-images/image-20230828161254417.png)
+
+5. 选择工作流适用的角色、文章类型，如果没有特别选择，默认全选。
+
+   ![image-20230828161329664](/Users/luyao/Library/Application Support/typora-user-images/image-20230828161329664.png)
+
+6. 点击"Save"保存工作流设置。
+
+通过以上步骤，便创建了一个Common工作流，以规范文档的审核和发布流程。
